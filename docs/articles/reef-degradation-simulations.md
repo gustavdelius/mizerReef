@@ -21,6 +21,7 @@ Before running degradation simulations, you need:
 3.  Understanding of your desired simulation timeframe
 
 ``` r
+
 library(mizerReef)
 library(mizer)
 library(ggplot2)
@@ -42,6 +43,7 @@ MizerReef includes three pre-defined degradation trajectories based on
 different post-bleaching scenarios:
 
 ``` r
+
 # Examine the structure of degradation scaling matrices
 cat("Rubble scale dimensions:", dim(rubble_scale), "\n")
 cat("Algae scale dimensions:", dim(algae_scale), "\n")
@@ -79,6 +81,7 @@ resources to habitat degradation:
 - **algae_capacity_boost**: Multipliers for algae carrying capacity
 
 ``` r
+
 # Default algae adjustment parameters
 default_growth_boost <- c(1.11, 1.11, 1.11, 1.11)
 default_capacity_boost <- c(2.0)
@@ -95,6 +98,7 @@ First, set up your tuned model with degradation parameters using
 setDegradation():
 
 ``` r
+
 # Start with a tuned steady-state model
 params_degraded <- karpata_model
 
@@ -119,6 +123,7 @@ For realistic simulations, add carrying capacity dynamics to
 unstructured resources using setURcapacity():
 
 ``` r
+
 # Add carrying capacity dynamics
 params_degraded <- setURcapacity(params_degraded, cap = 1.5)
 
@@ -134,6 +139,7 @@ cat("Carrying capacity dynamics enabled:",
 Now run a projection to see the effects of degradation:
 
 ``` r
+
 # Run 20-year simulation 
 sim_rubble <- project(params_degraded, t_max = 20, dt = 0.1)
 
@@ -147,6 +153,7 @@ plotBiomass(sim_rubble, total = TRUE) +
 ```
 
 ``` r
+
 # Plot species-specific biomass
 plotBiomass(sim_rubble) +
   ggtitle("Species biomass with rubble trajectory") +
@@ -159,6 +166,7 @@ plotBiomass(sim_rubble) +
 Let’s compare the three different degradation trajectories:
 
 ``` r
+
 # Set up models for each trajectory
 params_algae <- setDegradation(
   karpata_model,
@@ -212,6 +220,7 @@ Now let’s explore how algae dynamics affect the simulation by enabling
 algae_boost:
 
 ``` r
+
 # Set up model with algae boost enabled
 params_algae_boost <- setDegradation(
   karpata_model,
@@ -252,6 +261,7 @@ Let’s also examine how algae boost affects herbivorous species
 specifically:
 
 ``` r
+
 # Extract herbivore biomass (assuming 'parrotfish' are primary herbivores)
 herbivore_no_boost <- getBiomass(sim_rubble)[, "parrotfish"]
 herbivore_with_boost <- getBiomass(sim_algae_boost)[, "parrotfish"]
@@ -281,6 +291,7 @@ You can create custom degradation trajectories by building your own
 scaling matrix:
 
 ``` r
+
 # Create a custom "slow recovery" trajectory
 # Start with severe degradation, then gradual recovery
 n_bins <- nrow(rubble_scale)  # Number of refuge size bins
@@ -332,6 +343,7 @@ plotBiomass(sim_custom, total = TRUE) +
 Let’s examine how refuge availability changes during the simulation:
 
 ``` r
+
 # Extract refuge densities at different time points
 time_points <- c(0, 2, 5, 10, 15)  # Before bleaching, at bleaching, recovery
 
@@ -389,6 +401,7 @@ ggplot(refuge_data, aes(x = Size_bin, y = Refuge_density,
 Examine which species are most affected by degradation:
 
 ``` r
+
 # Calculate proportional change in biomass from pre- to post-bleaching
 initial_biomass <- getBiomass(sim_rubble)[1, ]  # Year 0
 final_biomass <- getBiomass(sim_rubble)[nrow(getBiomass(sim_rubble)), ]  # Final
@@ -438,6 +451,7 @@ kable(biomass_change,
 ### Parameter Selection
 
 ``` r
+
 # Example of systematic parameter exploration
 bleach_times <- c(1, 2, 5)  # Different timing of disturbance
 algae_growth_levels <- list(
@@ -471,6 +485,7 @@ Here’s a complete workflow for setting up and analyzing a degradation
 simulation:
 
 ``` r
+
 # 1. Start with tuned model
 params_base <- karpata_model
 
@@ -540,7 +555,7 @@ write.csv(getBiomass(sim_result), "simulation_biomass.csv")
     #>  ctype    en_GB.UTF-8
     #>  tz       Europe/London
     #>  date     2026-07-06
-    #>  pandoc   3.1.3 @ /usr/bin/ (via rmarkdown)
+    #>  pandoc   3.8.3 @ /usr/lib/rstudio/resources/app/bin/quarto/bin/tools/x86_64/ (via rmarkdown)
     #>  quarto   1.9.37 @ /usr/local/bin/quarto
     #> 
     #> ─ Packages ───────────────────────────────────────────────────────────────────
@@ -566,6 +581,7 @@ write.csv(getBiomass(sim_result), "simulation_biomass.csv")
     #>  ragg          1.5.2   2026-03-23 [2] CRAN (R 4.6.0)
     #>  rlang         1.2.0   2026-04-06 [2] CRAN (R 4.6.0)
     #>  rmarkdown     2.31    2026-03-26 [2] CRAN (R 4.6.0)
+    #>  rstudioapi    0.18.0  2026-01-16 [2] CRAN (R 4.6.0)
     #>  sass          0.4.10  2025-04-11 [2] CRAN (R 4.6.1)
     #>  sessioninfo   1.2.4   2026-06-04 [2] CRAN (R 4.6.0)
     #>  systemfonts   1.3.2   2026-03-05 [2] CRAN (R 4.6.0)
@@ -573,7 +589,7 @@ write.csv(getBiomass(sim_result), "simulation_biomass.csv")
     #>  xfun          0.58    2026-06-01 [2] CRAN (R 4.6.0)
     #>  yaml          2.3.12  2025-12-10 [2] CRAN (R 4.6.0)
     #> 
-    #>  [1] /tmp/RtmpEJ2X0i/temp_libpatha0e8ed6e526
+    #>  [1] /tmp/RtmpsiHePf/temp_libpath8a7f2e16b0f4
     #>  [2] /home/gustav/R/x86_64-pc-linux-gnu-library/4.6
     #>  [3] /usr/local/lib/R/site-library
     #>  [4] /usr/lib/R/site-library

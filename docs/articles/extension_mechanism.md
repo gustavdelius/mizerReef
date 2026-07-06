@@ -18,13 +18,13 @@ by structurally complex habitats such as coral reefs:
 The package uses the mechanisms described in
 [`vignette("creating-extension-packages", package = "mizer")`](https://sizespectrum.org/mizer/articles/creating-extension-packages.html):
 
-| Extension mechanism                                        | Used for                                                                                             |
-|------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
-| `.onLoad` + `registerExtension()`                          | Register the package with mizer so params objects know which extensions they need                    |
-| S4 marker classes + S3 dispatch                            | Define `mizerReef`/`mizerReefSim` so reef-specific methods run automatically                         |
-| `project*` rate methods                                    | Override Encounter, FeedingLevel, PredMort and Mort to add refuge, satiation, and senescence effects |
-| `setComponent()`                                           | Add algae and detritus as scalar dynamical components                                                |
-| [`utils::upgrade()`](https://rdrr.io/r/utils/upgrade.html) | Migrate objects saved with older mizerReef versions                                                  |
+| Extension mechanism | Used for |
+|----|----|
+| `.onLoad` + `registerExtension()` | Register the package with mizer so params objects know which extensions they need |
+| S4 marker classes + S3 dispatch | Define `mizerReef`/`mizerReefSim` so reef-specific methods run automatically |
+| `project*` rate methods | Override Encounter, FeedingLevel, PredMort and Mort to add refuge, satiation, and senescence effects |
+| `setComponent()` | Add algae and detritus as scalar dynamical components |
+| [`utils::upgrade()`](https://rdrr.io/r/utils/upgrade.html) | Migrate objects saved with older mizerReef versions |
 
 All of these are wired together inside
 [`newReefParams()`](https://cmbeese.github.io/mizerReef/reference/newReefParams.md),
@@ -35,6 +35,7 @@ the single entry point for building a reef model.
 mizerReef defines two S4 marker subclasses:
 
 ``` r
+
 setClass("mizerReef",    contains = "MizerParams")
 setClass("mizerReefSim", contains = "MizerSim")
 ```
@@ -48,6 +49,7 @@ marker classes in
 ### Registration via `.onLoad`
 
 ``` r
+
 .onLoad <- function(libname, pkgname) {
     mizer::registerExtension(pkgname, requirement = "sizespectrum/mizerReef")
 }
@@ -60,6 +62,7 @@ then records the chain and coerces the result to the marker class at the
 very end of construction:
 
 ``` r
+
 params@extensions <- mizer::getRegisteredExtensions()
 params <- mizer::coerceToExtensionClass(params)
 ```
@@ -72,15 +75,15 @@ saved object is reloaded in a later session.
 
 ### Methods dispatched on `mizerReef`
 
-| Method                                                                                                  | What it adds                                                                                 |
-|---------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
-| `projectEncounter.mizerReef()`                                                                          | Recomputes encounter for refuge-blocked predators using vulnerability-reduced prey abundance |
-| `projectFeedingLevel.mizerReef()`                                                                       | Gives predators without a satiation response unlimited intake capacity                       |
-| `projectPredMort.mizerReef()`                                                                           | Discounts predation mortality from refuge-blocked predators by prey vulnerability            |
-| `projectMort.mizerReef()`                                                                               | Adds senescence mortality on top of the standard mortality                                   |
-| [`getBiomass.mizerReefSim()`](https://cmbeese.github.io/mizerReef/reference/getBiomass.mizerReefSim.md) | Adds algae and detritus biomass to the species biomasses                                     |
-| [`removeSpecies.mizerReef()`](https://cmbeese.github.io/mizerReef/reference/removeSpecies.mizerReef.md) | Updates the algae/detritus encounter-rate matrices `rho`                                     |
-| [`upgrade.mizerReef()`](https://cmbeese.github.io/mizerReef/reference/upgrade.mizerReef.md)             | Migrates objects created with mizerReef \< 2.1.0 to the current layout                       |
+| Method | What it adds |
+|----|----|
+| `projectEncounter.mizerReef()` | Recomputes encounter for refuge-blocked predators using vulnerability-reduced prey abundance |
+| `projectFeedingLevel.mizerReef()` | Gives predators without a satiation response unlimited intake capacity |
+| `projectPredMort.mizerReef()` | Discounts predation mortality from refuge-blocked predators by prey vulnerability |
+| `projectMort.mizerReef()` | Adds senescence mortality on top of the standard mortality |
+| [`getBiomass.mizerReefSim()`](https://cmbeese.github.io/mizerReef/reference/getBiomass.mizerReefSim.md) | Adds algae and detritus biomass to the species biomasses |
+| [`removeSpecies.mizerReef()`](https://cmbeese.github.io/mizerReef/reference/removeSpecies.mizerReef.md) | Updates the algae/detritus encounter-rate matrices `rho` |
+| [`upgrade.mizerReef()`](https://cmbeese.github.io/mizerReef/reference/upgrade.mizerReef.md) | Migrates objects created with mizerReef \< 2.1.0 to the current layout |
 
 Every one of these methods calls
 [`NextMethod()`](https://rdrr.io/r/base/UseMethod.html) at least once,
@@ -111,6 +114,7 @@ same-size individuals compete for, so vulnerability depends on the
 actual local density of competitors at each time step, not just on size.
 
 ``` r
+
 plotVulnerable(params)
 ```
 
@@ -130,13 +134,15 @@ express “recompute this integral with different inputs for these rows
 only”.
 
 `projectEncounter.mizerReef()` and `projectPredMort.mizerReef()` solve
-this by calling the rate calculation twice — once through the chain via
-[`NextMethod()`](https://rdrr.io/r/base/UseMethod.html) to get the
-standard, composable result, and once more directly for the
-vulnerability-adjusted correction — and then combining the two by
-predator row:
+this by calling the rate calculation twice — once with unmodified inputs
+to get the standard result, and once more with a vulnerability-modified
+input to get the correction — and then combining the two by predator
+row. Both calls go through
+[`NextMethod()`](https://rdrr.io/r/base/UseMethod.html), so both stay
+fully composable:
 
 ``` r
+
 projectEncounter.mizerReef <- function(params, n, n_pp, n_other, t = 0, ...) {
     blocked_pred <- params@species_params$blocked_pred == TRUE
     if (!any(blocked_pred)) {
@@ -148,9 +154,11 @@ projectEncounter.mizerReef <- function(params, n, n_pp, n_other, t = 0, ...) {
     # Standard encounter (used as-is for predators unaffected by refuge)
     encounter <- NextMethod()
     # Encounter recomputed with vulnerability-reduced prey abundance (used
-    # for predators whose foraging is blocked by refuge)
-    encounter_vul <- mizer::mizerEncounter(params,
-        n = vulnerable * n, n_pp = n_pp, n_other = n_other, t = t, ...)
+    # for predators whose foraging is blocked by refuge). Reassigning the
+    # formal `n` and then calling NextMethod() bare sends the reduced prey
+    # abundance down the full extension chain.
+    n <- vulnerable * n
+    encounter_vul <- NextMethod()
     encounter[blocked_pred, ] <- encounter_vul[blocked_pred, ]
     encounter
 }
@@ -162,6 +170,7 @@ isolate the contribution of `blocked_pred` predators by zeroing out
 every other predator’s row before recomputing:
 
 ``` r
+
 projectPredMort.mizerReef <- function(params, n, n_pp, n_other, t = 0,
                                       pred_rate, ...) {
     blocked_pred <- params@species_params$blocked_pred == TRUE
@@ -172,35 +181,39 @@ projectPredMort.mizerReef <- function(params, n, n_pp, n_other, t = 0,
         new_rd = reefDegrade(params, n, n_pp, n_other, t, ...))
 
     pm <- NextMethod()
-    pred_rate_blocked <- pred_rate
-    pred_rate_blocked[!blocked_pred, ] <- 0
-    pm_blocked <- mizer::mizerPredMort(params, n, n_pp, n_other, t = t,
-        pred_rate = pred_rate_blocked, ...)
+    pred_rate[!blocked_pred, ] <- 0
+    pm_blocked <- NextMethod()
     pm + (vulnerable - 1) * pm_blocked
 }
 ```
 
-Because the standard part of the calculation
-([`NextMethod()`](https://rdrr.io/r/base/UseMethod.html)) still goes
-through the full extension chain, a lower extension package’s
-contribution to Encounter or PredMort is preserved for every predator
-that refuge does not block. Only the vulnerability *correction* bypasses
-the chain, since it needs a direct call to mizer’s base rate function to
-recompute with modified inputs.
+Because *both* calls go through
+[`NextMethod()`](https://rdrr.io/r/base/UseMethod.html) — the standard
+one and the vulnerability correction — a lower extension package’s
+contribution to Encounter or PredMort is preserved for every predator,
+blocked or not. The trick is that a bare
+[`NextMethod()`](https://rdrr.io/r/base/UseMethod.html) forwards the
+*current* values of the method’s formal arguments as bound in this
+frame, not the values the generic was originally called with. So
+reassigning `n <- vulnerable * n` (or zeroing rows of `pred_rate`)
+before the second bare call is enough to recompute the integral with
+modified inputs *through the full chain*, with no direct call to mizer’s
+base rate function needed.
 
 ### A `NextMethod()` pitfall worth knowing about
 
-An earlier version tried to get full composability by calling
-[`NextMethod()`](https://rdrr.io/r/base/UseMethod.html) a *second* time
-with an overridden argument, e.g. `NextMethod(n = vulnerable * n)`,
-instead of falling back to a direct call. This looks like it should work
-— R does let you override a single argument this way — but testing
+The obvious way to recompute with a modified input is to pass an
+override directly to
+[`NextMethod()`](https://rdrr.io/r/base/UseMethod.html),
+e.g. `NextMethod(n = vulnerable * n)`. This looks like it should work —
+R does let you override a single argument this way — but testing
 surfaced a serious problem: once a generic has more than two formal
 arguments, passing an explicit named override to
 [`NextMethod()`](https://rdrr.io/r/base/UseMethod.html) corrupts the
 matching of the *other* arguments. A minimal reproduction:
 
 ``` r
+
 f <- function(params, n, n_pp, n_other, t = 0, ...) UseMethod("f")
 f.default <- function(params, n, n_pp, n_other, t = 0, ...) {
     cat("default sees length(n_pp) =", length(n_pp), "\n")
@@ -214,15 +227,15 @@ f.foo <- function(params, n, n_pp, n_other, t = 0, ...) {
 Calling this with a 2×3 matrix `n` and a length-5 vector `n_pp` prints
 the correct `length(n_pp) = 5` for the first call, but
 `length(n_pp) = 6` for the second — `n_pp` has silently been overwritten
-by (part of) the new `n`. This is what led to the two rate methods above
-being written the way they are:
-[`NextMethod()`](https://rdrr.io/r/base/UseMethod.html) is only ever
-called bare (no overridden arguments), and the modified-input branch
-uses a direct, explicit call to
-[`mizer::mizerEncounter()`](https://sizespectrum.org/mizer/reference/mizerEncounter.html)
-/
-[`mizer::mizerPredMort()`](https://sizespectrum.org/mizer/reference/mizerPredMort.html)
-instead.
+by (part of) the new `n`. This is why the two rate methods above never
+pass an argument to
+[`NextMethod()`](https://rdrr.io/r/base/UseMethod.html). Instead they
+reassign the formal in the local frame (`n <- vulnerable * n`) and then
+call [`NextMethod()`](https://rdrr.io/r/base/UseMethod.html) bare: the
+modified value still propagates down the chain, but because no named
+argument is supplied, the matching of the remaining arguments is left
+intact. Reassigning-then-calling-bare gives you the composability of the
+chain *and* the modified input, with none of the argument-corruption.
 
 ## Algae and detritus: two unstructured resource components
 
@@ -231,6 +244,7 @@ Algae and detritus are each registered as a scalar *other* component via
 [`newReefParams()`](https://cmbeese.github.io/mizerReef/reference/newReefParams.md):
 
 ``` r
+
 params <- mizer::setComponent(
     params, "algae",
     initial_value = 1,
@@ -248,12 +262,13 @@ params <- mizer::setComponent(
 
 Both share the same
 [`encounter_contribution()`](https://cmbeese.github.io/mizerReef/reference/encounter_contribution.md)
-helper, which adds $\rho_{i}(w)\, B$ to species $i$’s encounter rate,
-where $B$ is the current biomass of the component and $\rho_{i}(w)$ is a
-species- and size-dependent encounter-rate coefficient stored in
+helper, which adds $`\rho_i(w)\,B`$ to species $`i`$’s encounter rate,
+where $`B`$ is the current biomass of the component and $`\rho_i(w)`$ is
+a species- and size-dependent encounter-rate coefficient stored in
 `other_params(params)`:
 
 ``` r
+
 encounter_contribution <- function(params, n_other, component, ...) {
     if (component == "algae") {
         params@other_params$algae_params$rho * n_other[[component]]
@@ -275,7 +290,10 @@ Both components follow the same dynamical structure — production
 balanced against biomass-proportional consumption, solved analytically
 within each time step to avoid Euler-step instabilities:
 
-$$\left. \frac{dB}{dt} = P - c\, B\quad\Rightarrow\quad B(t + dt) = B(t)\, e^{- c\, dt} + \frac{P}{c}\left( 1 - e^{- c\, dt} \right) \right.$$
+``` math
+\frac{dB}{dt} = P - c\,B \quad\Longrightarrow\quad
+B(t+dt) = B(t)\,e^{-c\,dt} + \frac{P}{c}\left(1-e^{-c\,dt}\right)
+```
 
 For algae, production is a constant growth rate; for detritus,
 production also includes senescence and external decomposition inputs.
@@ -283,6 +301,7 @@ Both have getters/setters for inspecting and tuning the steady-state
 balance, e.g.:
 
 ``` r
+
 detritus_lifetime(params)
 #> [1] 3.086921e-09
 algae_biomass(params)
@@ -297,6 +316,7 @@ method — following the same pattern as mizerShelf’s
 reading them directly out of `n_other`:
 
 ``` r
+
 getBiomass.mizerReefSim <- function(object, ...) {
     sim <- object
     b <- unclass(NextMethod())
@@ -321,6 +341,7 @@ alongside fish species — and it works regardless of whether `mizer` or
 the object’s class rather than by masking mizer’s function.
 
 ``` r
+
 sim <- project(params, t_max = 5, progress_bar = FALSE)
 plotBiomass(sim)
 ```
@@ -338,6 +359,7 @@ additive/input-transform case that
 on top of the standard mortality:
 
 ``` r
+
 projectMort.mizerReef <- function(params, n, n_pp, n_other, t = 0,
                                   f_mort, pred_mort, ...) {
     mort <- NextMethod()
@@ -355,6 +377,7 @@ bare [`NextMethod()`](https://rdrr.io/r/base/UseMethod.html) call
 (unlike the explicit-override case described above):
 
 ``` r
+
 projectFeedingLevel.mizerReef <- function(params, n, n_pp, n_other, t = 0,
                                           encounter, ...) {
     params@intake_max[params@species_params$satiation == FALSE] <- Inf
@@ -371,6 +394,7 @@ Removing a species must also drop its row from the algae and detritus
 `removeSpecies.MizerParams()` already knows how to trim:
 
 ``` r
+
 removeSpecies.mizerReef <- function(params, species, ...) {
     keep <- !valid_species_arg(params, species, return.logical = TRUE)
     p <- NextMethod()
@@ -383,6 +407,7 @@ removeSpecies.mizerReef <- function(params, species, ...) {
 ```
 
 ``` r
+
 p2 <- removeSpecies(params, "predators")
 species_params(p2)$species
 #> [1] "herbivores" "inverts"
@@ -403,6 +428,7 @@ used.
 does this automatically:
 
 ``` r
+
 upgrade.mizerReef <- function(object, ...) {
     tryCatch({
         old_refuge <- .hasSlot(object, "refuge_params")
@@ -432,6 +458,7 @@ afterwards.
 ## How the pieces fit together in `newReefParams()`
 
 ``` r
+
 newReefParams <- function(species_params, method, method_params, ...) {
     # Standard multispecies model
     params <- newMultispeciesParams(species_params, ...)

@@ -22,6 +22,7 @@ Before starting, ensure you have:
 4.  A suitable refuge profile for initial tuning
 
 ``` r
+
 library(mizerReef)
 library(mizer)
 library(ggplot2)
@@ -48,6 +49,7 @@ with a simpler binned profile that approximates the final refuge shape
 so that we can tune abundances first.
 
 ``` r
+
 # Create initial parameters object with tuning refuge profile
 params <- newReefParams(group_params = karpata_species,
                         interaction = karpata_int,
@@ -61,6 +63,7 @@ print(params)
 Let’s examine the species groups and their key parameters:
 
 ``` r
+
 # Show key species parameters
 kable(karpata_species[, c("species", "w_max", "w_mat", "refuge_user", 
                           "bad_pred", "biomass_observed")],
@@ -227,6 +230,7 @@ extreme (pure density-independence or maximum compensation).
     connectivity.
 
 ``` r
+
 # Set reproduction levels to 0.5 for all species
 rdi <- rep(0.5, nrow(karpata_species))
 names(rdi) <- karpata_species$species
@@ -247,6 +251,7 @@ require multiple iterations of
 [`reefSteady()`](https://cmbeese.github.io/mizerReef/reference/reefSteady.md).
 
 ``` r
+
 # Project to steady state - multiple calls ensure convergence
 params <- params |>
     reefSteady() |> reefSteady() |> reefSteady() |> 
@@ -270,6 +275,7 @@ to adjust reproduction parameters so that modeled biomasses match
 observations.
 
 ``` r
+
 # Calibrate biomasses to match observations
 params <- calibrateReefBiomass(params)
 params <- matchBiomasses(params)
@@ -286,6 +292,7 @@ Adjust growth-related parameters to match observed growth rates using
 [`matchReefGrowth()`](https://cmbeese.github.io/mizerReef/reference/matchReefGrowth.md).
 
 ``` r
+
 # Match growth rates
 params <- matchReefGrowth(params)
 params <- reefSteady(params)
@@ -311,6 +318,7 @@ kable(age_comparison,
 Repeat the biomass and growth matching process to fine-tune the model.
 
 ``` r
+
 # Iterate to refine biomass and growth matches
 params <- params |>
     calibrateReefBiomass() |> matchBiomasses() |> matchReefGrowth() |> 
@@ -328,6 +336,7 @@ plotBiomassVsSpecies(params) +
 Let’s examine the model performance after tuning:
 
 ``` r
+
 # Check feeding levels
 plotFeedingLevel(params) + 
   ggtitle("Feeding levels after tuning")
@@ -348,6 +357,7 @@ density-dependent refuge dynamics.
 refuge dynamics but requires a stable baseline to work from.
 
 ``` r
+
 # Switch to competitive refuge method
 params <- newRefuge(params,
                     new_method = "competitive", 
@@ -362,6 +372,7 @@ After switching refuge methods, we need to re-match biomasses as the
 refuge dynamics will have changed:
 
 ``` r
+
 # Re-match biomasses with new refuge method
 params <- params |>
     matchBiomasses() |> reefSteady() |> 
@@ -384,6 +395,7 @@ The final step involves tuning reproduction parameters to achieve the
 desired reproduction levels and density-dependence.
 
 ``` r
+
 # Set reproduction efficiency to allow some density dependence
 params <- setBevertonHolt(params, erepro = 0.35)
 params <- reefSteady(params)
@@ -409,6 +421,7 @@ kable(data.frame(Species = names(rdi_rdd_ratio),
 Let’s examine the final model performance across multiple metrics:
 
 ``` r
+
 # Overall spectra
 plotSpectra(params, total = TRUE, power = 2) + 
   ggtitle("Final total spectra")
@@ -456,6 +469,7 @@ This recipe provides a systematic approach to tuning `MizerReef` models:
 Here’s the complete script used for the Karpata model:
 
 ``` r
+
 # Complete tuning script for Karpata model
 library(mizerReef)
 library(mizer)
@@ -541,7 +555,7 @@ karpata_model <- reefSteady(params)
     #>  ctype    en_GB.UTF-8
     #>  tz       Europe/London
     #>  date     2026-07-06
-    #>  pandoc   3.1.3 @ /usr/bin/ (via rmarkdown)
+    #>  pandoc   3.8.3 @ /usr/lib/rstudio/resources/app/bin/quarto/bin/tools/x86_64/ (via rmarkdown)
     #>  quarto   1.9.37 @ /usr/local/bin/quarto
     #> 
     #> ─ Packages ───────────────────────────────────────────────────────────────────
@@ -567,6 +581,7 @@ karpata_model <- reefSteady(params)
     #>  ragg          1.5.2   2026-03-23 [2] CRAN (R 4.6.0)
     #>  rlang         1.2.0   2026-04-06 [2] CRAN (R 4.6.0)
     #>  rmarkdown     2.31    2026-03-26 [2] CRAN (R 4.6.0)
+    #>  rstudioapi    0.18.0  2026-01-16 [2] CRAN (R 4.6.0)
     #>  sass          0.4.10  2025-04-11 [2] CRAN (R 4.6.1)
     #>  sessioninfo   1.2.4   2026-06-04 [2] CRAN (R 4.6.0)
     #>  systemfonts   1.3.2   2026-03-05 [2] CRAN (R 4.6.0)
@@ -574,7 +589,7 @@ karpata_model <- reefSteady(params)
     #>  xfun          0.58    2026-06-01 [2] CRAN (R 4.6.0)
     #>  yaml          2.3.12  2025-12-10 [2] CRAN (R 4.6.0)
     #> 
-    #>  [1] /tmp/RtmpEJ2X0i/temp_libpatha0e8ed6e526
+    #>  [1] /tmp/RtmpsiHePf/temp_libpath8a7f2e16b0f4
     #>  [2] /home/gustav/R/x86_64-pc-linux-gnu-library/4.6
     #>  [3] /usr/local/lib/R/site-library
     #>  [4] /usr/lib/R/site-library

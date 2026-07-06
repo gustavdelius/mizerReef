@@ -12,6 +12,11 @@
 - [MizerReef Degradation
   Simulations](https://cmbeese.github.io/mizerReef/articles/reef-degradation-simulations.md):
 
+### Model Description
+
+- [The mizerReef size-spectrum
+  model](https://cmbeese.github.io/mizerReef/articles/model-description.md):
+
 ### Package Internals
 
 - [How mizerReef extends

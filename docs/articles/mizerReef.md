@@ -52,6 +52,7 @@ MizerReef is currently only available from GitHub. To install the latest
 version, use the `devtools` package:
 
 ``` r
+
 install.packages("devtools")
 devtools::install_github("cmbeese/mizerReef")
 ```
@@ -65,6 +66,7 @@ After installation, load Mizer, mizerExperimental, and MizerReef in each
 new R session:
 
 ``` r
+
 library(mizer)
 library(mizerExperimental)
 library(mizerReef)
@@ -151,6 +153,7 @@ matrix](https://cmbeese.github.io/mizerReef/reference/karpata_int.html)
 included with MizerReef, run:
 
 ``` r
+
 data("karpata_int")
 karpata_int
 ```
@@ -243,6 +246,7 @@ smooth profile.
   **Example:**
 
   ``` r
+
   method_params = list(L_refuge = 10, max_protection = 0.8)
   ```
 
@@ -261,6 +265,7 @@ information.
   **Example:**
 
   ``` r
+
   method_params = data.frame(
     length_bin = c(5, 10, 20, 40),
     protection = c(1, 0.5, 0, 0.2)
@@ -282,6 +287,7 @@ this when you have empirical refuge density data.
   **Example:**
 
   ``` r
+
   method_params = data.frame(
     length_bin = c(5, 10, 20, 40),
     refuge_density = c(2, 1, 0.5, 3)
@@ -313,12 +319,14 @@ profile based on field data. Use the code below to view the built-in
 refuge profile:
 
 ``` r
+
 data(karpata_refuge)
 ```
 
     ## Warning in data(karpata_refuge): data set 'karpata_refuge' not found
 
 ``` r
+
 karpata_refuge
 ```
 
@@ -365,6 +373,7 @@ tuning (`tuning_profile`) and a simple step function (`step_tune`) that
 can be used for this purpose.
 
 ``` r
+
 Caribbean_10_model <- newReefParams(group_params = Caribbean_10_species,
                                     interaction = Caribbean_10_interaction,
                                     method = "binned",
@@ -438,6 +447,7 @@ interpret your model outputs:
   refuge across sizes and species.
 
   ``` r
+
   plotRefuge(params)
   ```
 
@@ -446,6 +456,7 @@ interpret your model outputs:
   diet of each predator.
 
   ``` r
+
   plotDiet(params)
   ```
 
@@ -453,6 +464,7 @@ interpret your model outputs:
   Use \[plotBiomass()\] to view steady-state biomasses.
 
   ``` r
+
   plotBiomass(params)
   ```
 
@@ -469,6 +481,7 @@ interpret your model outputs:
   species.
 
   ``` r
+
   plotProductivity(params)
   ```
 
@@ -498,6 +511,7 @@ for simulating habitat degradation or restoration scenarios.
     plotting functions.
 
 ``` r
+
 # Change to a non-complex (no refuge) profile
 non_complex <- newRefuge(Caribbean_10_model, new_method = "noncomplex")
 
@@ -602,7 +616,7 @@ vignette](https://cmbeese.github.io/mizerReef/articles/reef-degradation-simulati
     ##  ctype    en_GB.UTF-8
     ##  tz       Europe/London
     ##  date     2026-07-06
-    ##  pandoc   3.1.3 @ /usr/bin/ (via rmarkdown)
+    ##  pandoc   3.8.3 @ /usr/lib/rstudio/resources/app/bin/quarto/bin/tools/x86_64/ (via rmarkdown)
     ##  quarto   1.9.37 @ /usr/local/bin/quarto
     ## 
     ## ─ Packages ───────────────────────────────────────────────────────────────────
@@ -650,6 +664,7 @@ vignette](https://cmbeese.github.io/mizerReef/articles/reef-degradation-simulati
     ##  reshape2            1.4.5      2025-11-12 [2] CRAN (R 4.6.0)
     ##  rlang               1.2.0      2026-04-06 [2] CRAN (R 4.6.0)
     ##  rmarkdown           2.31       2026-03-26 [2] CRAN (R 4.6.0)
+    ##  rstudioapi          0.18.0     2026-01-16 [2] CRAN (R 4.6.0)
     ##  S7                  0.2.2      2026-04-22 [2] CRAN (R 4.6.0)
     ##  sass                0.4.10     2025-04-11 [2] CRAN (R 4.6.1)
     ##  scales              1.4.0      2025-04-24 [2] CRAN (R 4.6.0)
@@ -667,7 +682,7 @@ vignette](https://cmbeese.github.io/mizerReef/articles/reef-degradation-simulati
     ##  xfun                0.58       2026-06-01 [2] CRAN (R 4.6.0)
     ##  yaml                2.3.12     2025-12-10 [2] CRAN (R 4.6.0)
     ## 
-    ##  [1] /tmp/RtmpEJ2X0i/temp_libpatha0e8ed6e526
+    ##  [1] /tmp/RtmpsiHePf/temp_libpath8a7f2e16b0f4
     ##  [2] /home/gustav/R/x86_64-pc-linux-gnu-library/4.6
     ##  [3] /usr/local/lib/R/site-library
     ##  [4] /usr/lib/R/site-library
