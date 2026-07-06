@@ -1,0 +1,82 @@
+# Plot the total biomass for each species in a size range
+
+This functions creates a barplot with the biomass of each specie within
+a size range. Usually used in conjunction with
+[`plotProductivity()`](https://cmbeese.github.io/mizerReef/reference/plotProductivity.md)
+to check for decoupling.
+
+## Usage
+
+``` r
+plotTotalBiomass(
+  object,
+  species = NULL,
+  min_fishing_l = NULL,
+  max_fishing_l = NULL,
+  return_data = FALSE,
+  ...
+)
+
+plotlyTotalBiomass(object, ...)
+```
+
+## Arguments
+
+- object:
+
+  An object of class MizerParams or MizerSim. If a MizerSim object is
+  provided, the biomass at the last time step is used.
+
+- species:
+
+  The species to be selected. Optional. By default all species are
+  selected. A vector of species names, or a numeric vector with the
+  species indices, or a logical vector indicating for each species
+  whether it is to be selected (TRUE) or not.
+
+- min_fishing_l:
+
+  The minimum length (cm) for biomass estimates. Defaults to smallest
+  size.
+
+- max_fishing_l:
+
+  The maximum length (cm) of for biomass estimates. Defaults to max
+  length.
+
+- return_data:
+
+  A boolean value that determines whether the formatted data used for
+  the plot is returned instead of the plot itself. Default value is
+  FALSE.
+
+- ...:
+
+  unused
+
+## Value
+
+A ggplot2 object
+
+## See also
+
+[`plotBiomass()`](https://sizespectrum.org/mizer/reference/plotBiomass.html),
+[`plot2TotalBiomass()`](https://cmbeese.github.io/mizerReef/reference/plot2TotalBiomass.md),
+[`plotTotalBiomassRelative()`](https://cmbeese.github.io/mizerReef/reference/plotTotalBiomassRelative.md),
+[`plotProductivity()`](https://cmbeese.github.io/mizerReef/reference/plotProductivity.md),
+[`plot2Productivity()`](https://cmbeese.github.io/mizerReef/reference/plot2Productivity.md),
+[`plotProductivityRelative()`](https://cmbeese.github.io/mizerReef/reference/plotProductivityRelative.md)
+
+Other plotting functions:
+[`plot2Productivity()`](https://cmbeese.github.io/mizerReef/reference/plot2Productivity.md),
+[`plot2TotalBiomass()`](https://cmbeese.github.io/mizerReef/reference/plot2TotalBiomass.md),
+[`plotDegradationScale()`](https://cmbeese.github.io/mizerReef/reference/plotDegradationScale.md),
+[`plotProductivity()`](https://cmbeese.github.io/mizerReef/reference/plotProductivity.md),
+[`plotProductivityRelative()`](https://cmbeese.github.io/mizerReef/reference/plotProductivityRelative.md),
+[`plotRefugeDensity()`](https://cmbeese.github.io/mizerReef/reference/plotRefugeDensity.md),
+[`plotRefugeProfile()`](https://cmbeese.github.io/mizerReef/reference/plotRefugeProfile.md),
+[`plotRelativeContribution()`](https://cmbeese.github.io/mizerReef/reference/plotRelativeContribution.md),
+[`plotSpectraPercentChange()`](https://cmbeese.github.io/mizerReef/reference/plotSpectraPercentChange.md),
+[`plotTotalAbundance()`](https://cmbeese.github.io/mizerReef/reference/plotTotalAbundance.md),
+[`plotTotalBiomassRelative()`](https://cmbeese.github.io/mizerReef/reference/plotTotalBiomassRelative.md),
+[`plotVulnerable()`](https://cmbeese.github.io/mizerReef/reference/plotVulnerable.md)

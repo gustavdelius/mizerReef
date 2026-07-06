@@ -1,0 +1,55 @@
+# Changelog
+
+## MizerReef 2.0.0
+
+### Major changes
+
+- New S4 class: `MizerReefParams`
+  - Added slots for refuge, algae, detritus
+- Refactor of the degradation system:
+  - Removed hardcoded bleaching trajectory logic.
+  - All bleaching and algae responses are now fully parameterizable via
+    user inputs.
+  - New parameters: `algae_boost`, `algae_growth_boost`,
+    `algae_capacity_boost` for flexible post-bleaching algal dynamics.
+  - Boost vectors allow compounding effects and custom duration.
+  - Auto-padding and validation for boost vectors.
+  - Recursive logic in
+    [`reefDegrade()`](https://cmbeese.github.io/mizerReef/reference/reefDegrade.md)
+    preserved, but now fully flexible.
+- Added comprehensive vignettes and user documentation for all major
+  workflows and features.
+- All exported functions now have tests and examples to ensure
+  reliability and reproducibility.
+
+### Bug fixes
+
+- Fixed double-application bug in algae growth boost during bleaching
+  year.
+- Added validation for positive numeric boost values and deg_scale
+  structure.
+- Improved type safety and maintainability in parameter handling.
+
+### Technical notes
+
+- All bleaching parameters are now stored in the params object for easy
+  access.
+- Compatible with existing mizerReef models (backward compatible via
+  defaults).
+- deg_scale structure unchanged: column 1 = bleaching, columns 2+ =
+  post-bleaching.
+- Recursive call pattern in
+  [`reefDegrade()`](https://cmbeese.github.io/mizerReef/reference/reefDegrade.md)
+  preserved (base case at t \< t_bleach).
+- `params@time_modified` updated on each bleaching event.
+
+### Minor changes
+
+- Added `progress` to Imports for progress bar support.
+- Updated minimum R version to 4.1.0.
+- Cleaned up example code and documentation blocks.
+
+------------------------------------------------------------------------
+
+See the reference manual and pkgdown site for details on new features
+and usage.
