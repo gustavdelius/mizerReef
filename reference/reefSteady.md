@@ -1,7 +1,8 @@
 # Project a mizerReef model to steady state
 
 This function tunes the detritus and algae biomass after running mizer's
-default `projectToSteady()` function on the fish sub-model.
+[`mizer::findSteadyState()`](https://sizespectrum.org/mizer/reference/findSteadyState.html)
+on the fish sub-model.
 
 ## Usage
 
@@ -16,6 +17,7 @@ reefSteady(
   return_sim = FALSE,
   preserve = c("reproduction_level", "erepro", "R_max"),
   progress_bar = TRUE,
+  info_level = mizer::default_info_level(),
   ...
 )
 ```
@@ -75,9 +77,21 @@ reefSteady(
   A shiny progress object to implement a progress bar in a shiny app.
   Default FALSE.
 
+- info_level:
+
+  How much mizer should say about the choices it makes here. Level 1
+  keeps only the reports that tell you something went differently from
+  how you asked; 0 is silence. See
+  [`mizer::default_info_level()`](https://sizespectrum.org/mizer/reference/default_info_level.html).
+
 - ...:
 
-  unused
+  Passed on to
+  [`mizer::findSteadyState()`](https://sizespectrum.org/mizer/reference/findSteadyState.html)
+  (or, when `return_sim = TRUE`, to
+  [`mizer::projectUntilSettled()`](https://sizespectrum.org/mizer/reference/projectUntilSettled.html)),
+  so that arguments such as `effort`, `method` or `info_level` can be
+  given.
 
 ## Value
 
@@ -120,11 +134,21 @@ and to make algae's (already live-evolved) biomass exact, unless
 `new_refuge == TRUE`, in which case algae and detritus are left
 completely untouched.
 
+`reefSteady()` is also registered as the
+[`mizer::steady()`](https://sizespectrum.org/mizer/reference/superseded_steady.html)
+and
+[`mizer::tuneSteadyState()`](https://sizespectrum.org/mizer/reference/tuneSteadyState.html)
+method for `mizerReef` objects, so calling either of those on a reef
+model does the reef-aware thing. Earlier versions instead replaced
+[`mizer::steady()`](https://sizespectrum.org/mizer/reference/superseded_steady.html)
+in mizer's namespace, which broke `steady()` for every non-reef model in
+the session.
+
 ## Examples
 
 ``` r
 data(caribbean_3_model)
 params <- reefSteady(caribbean_3_model)
-#> Reached the convergence tolerance after 1.5 years. The biomasses change at up to 9e-10 per year.
+#> Reached the convergence tolerance after 1.5 years. The biomasses change at up to 1.5e-10 per year.
 #> Warning: The flux of external detritus is negative.
 ```

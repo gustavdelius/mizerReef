@@ -47,6 +47,7 @@ newReefParams(
   include_ext_mort = TRUE,
   include_sen_mort = TRUE,
   z0pre = 0.2,
+  info_level = mizer::default_info_level(),
   ...
 )
 ```
@@ -316,6 +317,13 @@ newReefParams(
   where n is the given allometric scaling exponent and z0pre defaults to
   0.2.
 
+- info_level:
+
+  How much mizer should say about the choices it makes here. Level 1
+  keeps only the reports that tell you something went differently from
+  how you asked; 0 is silence. See
+  [`mizer::default_info_level()`](https://sizespectrum.org/mizer/reference/default_info_level.html).
+
 - ...:
 
   Extra parameters to be passed to
@@ -457,7 +465,7 @@ An object of type
          \deqn{ R_j(w_p) = r_k ~~~~~~~ w_p ∈ (~w_{k-1}, w_k~] }{
                   R_j(w_p) = r_k ~~~~~~~ w_p ∈ (~w_{k-1}, w_k~] }
 
-             where \eqn{r_k} is the proportion of fish with access to refuge in
+         where \eqn{r_k} is the proportion of fish with access to refuge in
          size class \eqn{k}.
 
          For this method, `method_params` should contain columns named

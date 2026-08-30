@@ -22,6 +22,7 @@ setRefuge(
   max_protect = NULL,
   tau = NULL,
   use_dummy_fish_bins = TRUE,
+  info_level = mizer::default_info_level(),
   ...
 )
 ```
@@ -127,6 +128,13 @@ setRefuge(
     in `params@other_params$refuge_params$use_dummy_fish_bins` and used
     by
     [`getRefuge()`](https://cmbeese.github.io/mizerReef/reference/getRefuge.md).
+
+- info_level:
+
+  How much mizer should say about the choices it makes here. Level 1
+  keeps only the reports that tell you something went differently from
+  how you asked; 0 is silence. See
+  [`mizer::default_info_level()`](https://sizespectrum.org/mizer/reference/default_info_level.html).
 
 - ...:
 
@@ -238,7 +246,7 @@ option that matches your measurement approach and ecological realism.
          \deqn{ R_j(w_p) = r_k ~~~~~~~ w_p ∈ (~w_{k-1}, w_k~] }{
                   R_j(w_p) = r_k ~~~~~~~ w_p ∈ (~w_{k-1}, w_k~] }
 
-             where \eqn{r_k} is the proportion of fish with access to refuge in
+         where \eqn{r_k} is the proportion of fish with access to refuge in
          size class \eqn{k}.
 
          For this method, `method_params` should contain columns named

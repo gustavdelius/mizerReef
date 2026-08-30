@@ -878,8 +878,8 @@ relative share rather than its absolute biomass.
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] knitr_1.51              mizerReef_2.0.1         mizerExperimental_3.3.0
-    ## [4] mizer_3.3.0            
+    ## [1] knitr_1.51              mizerReef_2.0.3         mizerExperimental_3.3.1
+    ## [4] mizer_3.3.1            
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] plotly_4.12.1       sass_0.4.10         generics_0.1.4     
@@ -901,4 +901,4 @@ relative share rather than its absolute biomass.
     ## [49] systemfonts_1.3.2   xfun_0.60           tibble_3.3.1       
     ## [52] tidyselect_1.2.1    farver_2.1.2        patchwork_1.3.2    
     ## [55] htmltools_0.5.9     labeling_0.4.3      rmarkdown_2.31     
-    ## [58] compiler_4.6.1      S7_0.2.2            splus2R_1.3-5
+    ## [58] compiler_4.6.1      S7_0.2.2

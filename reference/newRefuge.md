@@ -21,6 +21,7 @@ newRefuge(
   new_L_refuge = NULL,
   new_prop_protect = NULL,
   scale_bin = NULL,
+  info_level = mizer::default_info_level(),
   ...
 )
 ```
@@ -80,6 +81,13 @@ newRefuge(
   Changes the proportion of fish protected. If a single value is given,
   it is applied to all bins.
 
+- info_level:
+
+  How much mizer should say about the choices it makes here. Level 1
+  keeps only the reports that tell you something went differently from
+  how you asked; 0 is silence. See
+  [`mizer::default_info_level()`](https://sizespectrum.org/mizer/reference/default_info_level.html).
+
 - ...:
 
   Unused
@@ -138,7 +146,7 @@ matching the number of bins.
          \deqn{ R_j(w_p) = r_k ~~~~~~~ w_p ∈ (~w_{k-1}, w_k~] }{
                   R_j(w_p) = r_k ~~~~~~~ w_p ∈ (~w_{k-1}, w_k~] }
 
-             where \eqn{r_k} is the proportion of fish with access to refuge in
+         where \eqn{r_k} is the proportion of fish with access to refuge in
          size class \eqn{k}.
 
          For this method, `method_params` should contain columns named
